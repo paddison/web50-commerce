@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    {% for auction in auctions%}
+    <a href="{% url 'view' auction.id%}">
+        <div class="index-auction">
+            <img class="index-auction-pic" src="{{auction.picture}}" alt="Picture of {{auction}}">
+            <div class="index-description">
+                <h3>{{auction.name}}</h3>
+                {% if auction.current_bid %}
+                    <p>Price: {{auction.current_bid}}$</p>
+                {% else %}
+                    <p>Price: {{auction.starting_bid}}$</p>
+                {% endif %} 
+                <p>Created on: {{auction.created_on}}</p>
+            </div>       
+        </div>
+    </a>
+    {% empty %}
+        <p>No Auctions</p>
+    {% endfor %}
+
+    
+{% endblock %}

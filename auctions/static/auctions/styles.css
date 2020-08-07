@@ -1,0 +1,17 @@
+body {
+    padding: 10px;
+}
+
+.index-auction {
+    display: flex;
+}
+
+.index-auction-pic {
+    display: flex;
+    width: 500px;
+}
+
+.add-form {
+    display: flex;
+    flex-direction: column;
+}

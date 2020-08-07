@@ -1,0 +1,58 @@
+{% extends "auctions/layout.html" %}
+{% block body%}
+    <h1>{{auction.name}}</h1>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <img class="index-auction-pic" src="{{auction.picture}}" alt="Picture of {{auction}}">
+    {% if bids.current_bid %}
+        <p>Price: {{bids.current_bid}}$</p>
+    {% else %}
+        <p>Price: {{auction.starting_bid}}$</p>
+    {% endif %} 
+    <p>Created on: {{ auction.created_on }} by {{ auction.created_by }}</p>
+
+    <!-- if closed -->
+    {% if auction.closed == True %}
+        <p>This Listing is closed</p>
+        {% if user == bids.cur_bidder %}
+            <p>You won the listing</p>
+        {% elif not bids.cur_bidder and auction.created_by == user %}
+            <p>No one bid on this listing</p>
+        {% endif %}
+
+    <!-- if open -->
+    {% else %}
+        <p>{{bids.count}} Bid(s) so far</p>
+
+        <!-- check if viewer is current bidder -->
+        {% if user.id == bids.cur_bidder.id and not user == auction.created_by %}
+            <p>You are the current bidder</p>
+        {% elif not user == auction.created_by %}
+            <p>You are not the current bidder</p>
+        {% endif %}
+
+        <!-- either close or bid, depending on user-->
+        {% if user == auction.created_by %}
+            <form class="bid-form" action="{% url 'close' auction.id %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Close Bid">
+            </form>
+        {% else %}
+            
+            {% if auction.closed == False %} 
+                <form class="bid-form" action="{% url 'view' auction.id %}" method="POST">
+                    {% csrf_token %}
+                    {{ bidForm }}
+                    <input type="submit" value="Place Bid">
+                </form>
+                <form class="bid-form" action="{% url 'watchlist' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="add" value="add">
+                    <input type="hidden" name="auction" value="{{ auction.id }}">
+                    <input type="submit" value="Add To Watchlist">
+                </form>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
