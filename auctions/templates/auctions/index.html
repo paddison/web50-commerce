@@ -1,15 +1,15 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div class=view-wrapper>
-        <div class=view-title>
+    <div class=index-view-wrapper>
+        <div class=index-view-title>
             <h2>{% block title %}Browse{% endblock%}</h2>
         </div>
         
-        <div class=auction-view>
+        <div class=index-auction-view>
         {% for auction in auctions%}
 
-            <a class=auction-item href="{% url 'view' auction.id%}">
+            <a class=index-auction-item href="{% url 'view' auction.id%}">
                 {% if auction.picture %}
                 <img class="index-auction-pic" src="{{auction.picture}}" alt="Picture of {{auction}}">
                 {% else %}

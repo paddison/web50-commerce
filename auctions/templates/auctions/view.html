@@ -1,74 +1,85 @@
 {% extends "auctions/layout.html" %}
 {% block body%}
-    <h1>{{auction.name}}</h1>
+<div class="view-main-wrapper">
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
-    {% if auction.picture %}
-    <img class="" src="{{auction.picture}}" alt="Picture of {{auction}}">
-    {% else %}
-    <img class="" src="https://upload.wikimedia.org/wikipedia/en/6/60/No_Picture.jpg" alt="No picture available for listing {{auction.name}}">
-    {% endif %}
-    {% if bids.current_bid %}
-        <p>Price: {{bids.current_bid}}$</p>
-    {% else %}
-        <p>Price: {{auction.starting_bid}}$</p>
-    {% endif %} 
-    <p>Created on: {{ auction.created_on }} by {{ auction.created_by }}</p>
-
-    <!-- if closed -->
-    {% if auction.closed == True %}
-        <p>This Listing is closed</p>
-        {% if user == bids.cur_bidder %}
-            <p>You won the listing</p>
-        {% elif not bids.cur_bidder and auction.created_by == user %}
-            <p>No one bid on this listing</p>
+    <div class="view-img-wrapper">
+        {% if auction.picture %}
+        <img class="view-img" src="{{auction.picture}}" alt="Picture of {{auction}}">
+        {% else %}
+        <img class="view-img" src="https://upload.wikimedia.org/wikipedia/en/6/60/No_Picture.jpg" alt="No picture available for listing {{auction.name}}">
         {% endif %}
+    </div>
+    <div class="view-info-wrapper">
+        <h1>{{auction.name}}</h1>
+        {% if bids.current_bid %}
+            <p>Price: {{bids.current_bid}}$</p>
+        {% else %}
+            <p>Price: {{auction.starting_bid}}$</p>
+        {% endif %} 
+        <p>Created on: {{ auction.created_on }} by {{ auction.created_by }}</p>
 
-    <!-- if open -->
-    {% else %}
-        <p>{{bids.count}} Bid(s) so far</p>
-        <!-- only show this information if user is logged in -->
-        {% if user.is_authenticated %} 
-            <!-- check if auction is created by user -->
-            {% if user == auction.created_by %}
-            <form class="bid-form" action="{% url 'close' auction.id %}" method="POST">
-                {% csrf_token %}
-                <input type="submit" value="Close Bid">
-            </form>
-            {% else %} 
-            <!-- see if user is current bidder -->
-                {% if user.id == bids.cur_bidder.id %}
-                    <p>You are the current bidder</p>
-                {% else %}
-                    <form class="bid-form" action="{% url 'view' auction.id %}" method="POST">
+        <!-- if closed -->
+        {% if auction.closed == True %}
+            <p>This Listing is closed</p>
+            {% if user == bids.cur_bidder %}
+                <p>You won the listing</p>
+            {% elif not bids.cur_bidder and auction.created_by == user %}
+                <p>No one bid on this listing</p>
+            {% endif %}
+
+        <!-- if open -->
+        {% else %}
+            <p>{{bids.count}} Bid(s) so far</p>
+            <!-- only show this information if user is logged in -->
+            {% if user.is_authenticated %} 
+                <!-- check if auction is created by user -->
+                {% if user == auction.created_by %}
+                <form class="bid-form" action="{% url 'close' auction.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Close Bid">
+                </form>
+                {% else %} 
+                <!-- see if user is current bidder -->
+                    {% if user.id == bids.cur_bidder.id %}
+                        <p>You are the current bidder</p>
+                    {% else %}
+                        <form class="bid-form" action="{% url 'view' auction.id %}" method="POST">
+                            {% csrf_token %}
+                            {{ bidForm }}
+                            <input type="submit" value="Place Bid">
+                        </form>
+                    {% endif %}
+                    <form class="bid-form" action="{% url 'watchlist' %}" method="POST">
                         {% csrf_token %}
-                        {{ bidForm }}
-                        <input type="submit" value="Place Bid">
+                        {{ watchlistForm }}
+                        {% if onWatchlist%}
+                            <input type="submit" value="Remove from Watchlist">
+                        {% else %}
+                            <input type="submit" value="Add to Watchlist">
+                        {% endif %}
                     </form>
                 {% endif %}
-                <form class="bid-form" action="{% url 'watchlist' %}" method="POST">
+            </div>
+            <div class="view-comments-wrapper">
+                <form class="view-comments-form" action="{% url 'comment' %}" method="POST">
                     {% csrf_token %}
-                    {{ watchlistForm }}
-                    {% if onWatchlist%}
-                        <input type="submit" value="Remove from Watchlist">
-                    {% else %}
-                        <input type="submit" value="Add to Watchlist">
-                    {% endif %}
+                    {{ commentForm }}
+                    <input type="submit" value="Post">
                 </form>
             {% endif %}
-            <form class="bid-form" action="{% url 'comment' %}" method="POST">
-                {% csrf_token %}
-                {{ commentForm }}
-                <input type="submit" value="Post">
-            </form>
-        {% endif %}
-    {% endif %}
-    <h3>Comments:</h3>
-    {% for comment in comments %}
-        <p>{{ comment.text }}</p>
-        <p>Posted by {{ comment.user }} on {{ comment.created_on}}</p>
-    {% empty %}
-        <p>No comments so far.</p>
-    {% endfor %}
+        {% endif %}  
+        <div class="view-comments-list">        
+            <h3>Comments:</h3>
+            {% for comment in comments %}
+                <p>{{ comment.text }}</p>
+                <p>Posted by {{ comment.user }} on {{ comment.created_on}}</p>
+            {% empty %}
+                <p>No comments so far.</p>
+            {% endfor %}</div>
+
+    </div>
+
+</div>
 {% endblock %}
