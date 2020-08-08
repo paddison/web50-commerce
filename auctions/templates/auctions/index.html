@@ -1,26 +1,37 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-
-    {% for auction in auctions%}
-    <a href="{% url 'view' auction.id%}">
-        <div class="index-auction">
-            <img class="index-auction-pic" src="{{auction.picture}}" alt="Picture of {{auction}}">
-            <div class="index-description">
-                <h3>{{auction.name}}</h3>
-                {% if auction.current_bid %}
-                    <p>Price: {{auction.current_bid}}$</p>
-                {% else %}
-                    <p>Price: {{auction.starting_bid}}$</p>
-                {% endif %} 
-                <p>Created on: {{auction.created_on}}</p>
-            </div>       
+    <div class=view-wrapper>
+        <div class=view-title>
+            <h2>{% block title %}Browse{% endblock%}</h2>
         </div>
-    </a>
-    {% empty %}
-        <p>No Auctions</p>
-    {% endfor %}
+        
+        <div class=auction-view>
+        {% for auction in auctions%}
+
+            <a class=auction-item href="{% url 'view' auction.id%}">
+                {% if auction.picture %}
+                <img class="index-auction-pic" src="{{auction.picture}}" alt="Picture of {{auction}}">
+                {% else %}
+                <img class="index-auction-pic" src="https://upload.wikimedia.org/wikipedia/en/6/60/No_Picture.jpg" alt="No picture available for listing {{auction.name}}">
+                {% endif %}
+                <div class="index-description">
+                    <p class="index-name">{{auction.name}}</p>
+                    {% if auction.current_bid %}
+                        <p class="index-price">${{auction.current_bid}}</p>
+                    {% else %}
+                        <p class="index-price">${{auction.starting_bid}}</p>
+                    {% endif %} 
+                    <p class="index-created">Created on: {{auction.created_on}}</p>
+                </div>       
+
+            </a>
+
+        {% empty %}
+            <p>{% block empty%}No Listings{% endblock %}</p>
+        {% endfor %}
+        </div>
+    </div>
 
     
 {% endblock %}

@@ -4,7 +4,11 @@
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
-    <img class="index-auction-pic" src="{{auction.picture}}" alt="Picture of {{auction}}">
+    {% if auction.picture %}
+    <img class="" src="{{auction.picture}}" alt="Picture of {{auction}}">
+    {% else %}
+    <img class="" src="https://upload.wikimedia.org/wikipedia/en/6/60/No_Picture.jpg" alt="No picture available for listing {{auction.name}}">
+    {% endif %}
     {% if bids.current_bid %}
         <p>Price: {{bids.current_bid}}$</p>
     {% else %}
@@ -24,35 +28,47 @@
     <!-- if open -->
     {% else %}
         <p>{{bids.count}} Bid(s) so far</p>
-
-        <!-- check if viewer is current bidder -->
-        {% if user.id == bids.cur_bidder.id and not user == auction.created_by %}
-            <p>You are the current bidder</p>
-        {% elif not user == auction.created_by %}
-            <p>You are not the current bidder</p>
-        {% endif %}
-
-        <!-- either close or bid, depending on user-->
-        {% if user == auction.created_by %}
+        <!-- only show this information if user is logged in -->
+        {% if user.is_authenticated %} 
+            <!-- check if auction is created by user -->
+            {% if user == auction.created_by %}
             <form class="bid-form" action="{% url 'close' auction.id %}" method="POST">
                 {% csrf_token %}
                 <input type="submit" value="Close Bid">
             </form>
-        {% else %}
-            
-            {% if auction.closed == False %} 
-                <form class="bid-form" action="{% url 'view' auction.id %}" method="POST">
-                    {% csrf_token %}
-                    {{ bidForm }}
-                    <input type="submit" value="Place Bid">
-                </form>
+            {% else %} 
+            <!-- see if user is current bidder -->
+                {% if user.id == bids.cur_bidder.id %}
+                    <p>You are the current bidder</p>
+                {% else %}
+                    <form class="bid-form" action="{% url 'view' auction.id %}" method="POST">
+                        {% csrf_token %}
+                        {{ bidForm }}
+                        <input type="submit" value="Place Bid">
+                    </form>
+                {% endif %}
                 <form class="bid-form" action="{% url 'watchlist' %}" method="POST">
                     {% csrf_token %}
-                    <input type="hidden" name="add" value="add">
-                    <input type="hidden" name="auction" value="{{ auction.id }}">
-                    <input type="submit" value="Add To Watchlist">
+                    {{ watchlistForm }}
+                    {% if onWatchlist%}
+                        <input type="submit" value="Remove from Watchlist">
+                    {% else %}
+                        <input type="submit" value="Add to Watchlist">
+                    {% endif %}
                 </form>
             {% endif %}
+            <form class="bid-form" action="{% url 'comment' %}" method="POST">
+                {% csrf_token %}
+                {{ commentForm }}
+                <input type="submit" value="Post">
+            </form>
         {% endif %}
     {% endif %}
+    <h3>Comments:</h3>
+    {% for comment in comments %}
+        <p>{{ comment.text }}</p>
+        <p>Posted by {{ comment.user }} on {{ comment.created_on}}</p>
+    {% empty %}
+        <p>No comments so far.</p>
+    {% endfor %}
 {% endblock %}

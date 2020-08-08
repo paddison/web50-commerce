@@ -4,9 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Auction, Bid
-from .forms import AuctionForm, BidForm
-from .util import getCurBid
+from .models import User, Auction, Bid, Watchlist, Comment
+from .forms import AuctionForm, BidForm, WatchlistForm, CommentForm
+from .util import getCurBid, categorylist
 
 def index(request):
     auctions = Auction.objects.filter(closed=False)
@@ -37,7 +37,6 @@ def add(request):
     return render(request, "auctions/add.html", {"form": form})
 
 def view(request, id):
-
     try:
         auction = Auction.objects.get(id=id)
     except:
@@ -47,6 +46,21 @@ def view(request, id):
         "count": auction.bids.count(),
         "cur_bidder": getCurBid(auction).user if getCurBid(auction) else None,
     }
+
+    if request.user.is_authenticated and Watchlist.objects.filter(user=request.user, auction=auction):
+        onWatchlist = True
+    else:
+        onWatchlist = False
+    data = {
+        "auction": auction, 
+        "bids": bids, 
+        "bidForm": BidForm(),
+        "watchlistForm": WatchlistForm(initial={"auction_id": auction.id, "onWatchlist": onWatchlist}),
+        "onWatchlist": onWatchlist,
+        "commentForm": CommentForm(initial={"auction_id": auction.id}),
+        "comments": Comment.objects.filter(auction=auction).order_by("created_on").reverse()
+        }
+
     if request.method == "POST":
         form = BidForm(request.POST)
         if form.is_valid():       
@@ -60,18 +74,10 @@ def view(request, id):
                 bid.save()
                 return HttpResponseRedirect(reverse("index"))
             else:
-                return render(request, "auctions/view.html", {
-                    "auction": auction,
-                    "bids": bids,
-                    "bidForm": BidForm(),
-                    "message": "Bid must be higher than current Bid"
-                })
+                data["message": "Bid must be higher than current Bid"]
+                return render(request, "auctions/view.html", data)
                 
-    return render(request, "auctions/view.html", {
-        "auction": auction, 
-        "bids": bids, 
-        "bidForm": BidForm(),
-        })
+    return render(request, "auctions/view.html", data)
 
 def close(request, id):
     if request.method == "POST":
@@ -85,10 +91,36 @@ def close(request, id):
 
 def watchlist(request):
     if request.method == "POST":
-        print(request.POST)
+        form = WatchlistForm(request.POST)
+        if form.is_valid():  
+            auction = Auction.objects.get(id=form.cleaned_data["auction_id"])
+            if form.cleaned_data["onWatchlist"] == True:
+                watchlistlistItem = Watchlist.objects.filter(user=request.user, auction=auction)
+                watchlistlistItem.delete()
+            else:
+                watchlistItem = Watchlist(user=request.user, auction=auction)
+                watchlistItem.save()
+        return HttpResponseRedirect(reverse("index"))
+    auctions = Auction.objects.filter(watchlist__user=request.user)
+    return render(request, "auctions/watchlist.html", {"auctions": auctions})
+
+def comment(request):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():  
+            auction = Auction.objects.get(id=form.cleaned_data["auction_id"])
+            comment = Comment(user=request.user, auction=auction, text=form.cleaned_data["comment"])
+            comment.save()
         return HttpResponseRedirect(reverse("index"))
     return HttpResponseRedirect(reverse("index"))
+    
+def categories(request):
+    category =  [i for i,j in categorylist]
+    return render(request, "auctions/categories.html", {"categories": category})
 
+def category_view(request, category):
+    auctions = Auction.objects.filter(category=category).order_by("created_on").reverse()
+    return render(request, "auctions/category_view.html", {"auctions": auctions, "category": category})
 
 
 def login_view(request):
