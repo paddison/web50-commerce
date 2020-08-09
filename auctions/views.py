@@ -37,6 +37,7 @@ def add(request):
     return render(request, "auctions/add.html", {"form": form})
 
 def view(request, id):
+    
     try:
         auction = Auction.objects.get(id=id)
     except:
@@ -72,7 +73,7 @@ def view(request, id):
             if bidValue > highestBid:
                 bid = Bid(user=request.user, auction=auction, value=bidValue)
                 bid.save()
-                return HttpResponseRedirect(reverse("index"))
+                return HttpResponseRedirect(reverse("view", kwargs={"id": auction.id}))
             else:
                 data["message": "Bid must be higher than current Bid"]
                 return render(request, "auctions/view.html", data)
@@ -82,7 +83,6 @@ def view(request, id):
 def close(request, id):
     if request.method == "POST":
         print(request.POST)
-
         auction = Auction.objects.get(id=id)
         auction.closed = True
         auction.save()
@@ -100,7 +100,7 @@ def watchlist(request):
             else:
                 watchlistItem = Watchlist(user=request.user, auction=auction)
                 watchlistItem.save()
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("view", kwargs={"id": auction.id}))
     auctions = Auction.objects.filter(watchlist__user=request.user)
     return render(request, "auctions/watchlist.html", {"auctions": auctions})
 
@@ -110,9 +110,8 @@ def comment(request):
         if form.is_valid():  
             auction = Auction.objects.get(id=form.cleaned_data["auction_id"])
             comment = Comment(user=request.user, auction=auction, text=form.cleaned_data["comment"])
-            comment.save()
-        return HttpResponseRedirect(reverse("index"))
-    return HttpResponseRedirect(reverse("index"))
+            comment.save()  
+    return HttpResponseRedirect(reverse("view", kwargs={"id": auction.id}))
     
 def categories(request):
     category =  [i for i,j in categorylist]

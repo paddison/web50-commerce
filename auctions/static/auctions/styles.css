@@ -2,6 +2,15 @@ body {
     padding: 10px;
 }
 
+h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 16px;
+}
+
 .index-view-wrapper {
     display: flex;
     flex-direction: column;
@@ -65,34 +74,136 @@ body {
 .view-main-wrapper {
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 1fr 1fr;
-    grid-gap: 50px 50px;
+    grid-template-rows: 40vh auto;
+    grid-gap: 70px 50px;
+    margin: auto 13%;
 }
 
 .view-img-wrapper {
     grid-area: 1/1/2/2;
+    display: flex;
+    justify-content: right;
+    position: relative;
 }
 
 .view-img {
     width: 100%;
     display: flex;
+    object-fit: cover ;
+    max-width: 400px;
+}
+
+.far, .fas {
+    padding-top: 13px;
+    color: rgb(247, 69, 46);
+    scale: 1.3;
+}
+
+.view-watchlist-button {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: none;
+    box-shadow: 0 0px 7px rgba(122, 122, 122, 0.507);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    background-color: white;
+    transition: scale 0.1s ease-out,box-shadow 0.1s ease-out;
+    right: 1px;
+    top: 1px;
+}
+
+.view-watchlist-button:hover {
+    scale: 1.1;
+    box-shadow: 0 0px 10px rgba(94, 94, 94, 0.507);
 }
 
 .view-info-wrapper {
     grid-area:  1/2/2/3;
     display: flex;
     flex-direction: column;
+    max-width: 400px;
 }
+
+.view-auction-name {
+    font-size: 24px;
+}
+.view-price {
+    font-weight: bold;
+    font-size: 24px;
+}
+.view-created {
+    font-size: 12px;
+    color: #595959;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgb(167, 167, 167);
+}
+
+.view-description-title {
+    margin-bottom: 0;
+    color: #595959;
+    font-size: 12px;
+}
+.bid-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+#id_placed_bid {
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    margin-bottom: 15px;
+    padding-left: 10px;
+    box-shadow: 0 0px 7px rgba(122, 122, 122, 0.507);
+    border: 1px solid rgba(34, 34, 34, 0.15);
+    transition: border 0.1s ease-out,box-shadow 0.1s ease-out;
+}
+
+#id_placed_bid:hover {
+    border: 1px solid rgba(34, 34, 34, 0.712);
+}
+
+.bid-form-submit {
+    height: 40px;
+    background-color: rgb(29, 29, 29);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    transition: scale 0.1s ease-out,box-shadow 0.1s ease-out;
+}
+
+.bid-form-submit:hover {
+    scale: 1.02;
+    background-color: rgb(39, 39, 39);
+
+}
+
 .view-comments-wrapper {
     grid-area: 2/1/3/3;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.view-comment {
+    margin-bottom: 5px;
+    font-size: 14px;
 }
 
 .view-comments-form {
     display: flex;
-    width: 30%;
     flex-direction: column;
+    
+}
+
+.view-comments-form > label {
+    font-size: 14px;
+    margin-bottom: 1px;
 }
 
 .view-comments-list {
@@ -101,6 +212,69 @@ body {
     flex-direction: column;
 }
 
+#id_comment {
+    box-shadow: 0 0px 7px rgba(122, 122, 122, 0.507);
+    border: 1px solid rgba(34, 34, 34, 0.15);
+    border-radius: 5px;
+    max-width: 500px;
+    height: 130px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: border 0.1s ease-out;
+    resize: none;
+    font-size: 14px;
+}
+
+#id_comment:hover {
+    border: 1px solid rgba(34, 34, 34, 0.712);
+}
+
+.comment-submit {
+    width: 100%;
+    height: 40px;
+    border-radius: 20px;
+    border: 1px solid rgb(80, 80, 80);
+    transition: scale 0.1s ease-out;
+}
+
+.comment-submit:hover {
+    scale: 1.02;
+}
+
 .bid-form > label{
     display: none;
+}
+
+.nav {
+    justify-content: center;
+}
+
+.title-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+#title {
+    text-align: center;
+
+}
+
+.title-logo {
+    width: 50px;
+    height: 50px;
+    margin-left: 20px;
+}
+
+.layout-signed {
+    display: flex;
+    justify-content: center;
+}
+
+.categories-wrapper {
+    margin-left: 5%;
+}
+
+.categories-wrapper > h2{
+    margin-bottom: 20px;
 }

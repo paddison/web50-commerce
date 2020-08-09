@@ -5,7 +5,7 @@ class AuctionForm(forms.Form):
     name = forms.CharField(label="Name of Your item:", max_length=64)
     description = forms.CharField(label="Description:", widget=forms.Textarea, max_length=256)
     starting_bid = forms.DecimalField(label="Starting Bid:", max_digits=7, decimal_places=2)
-    category = forms.ChoiceField(label="Category", choices=categorylist)
+    category = forms.ChoiceField(label="Category", choices=categorylist, initial="Others")
     picture = forms.URLField(label="Link a URL of a picture:", required=False)
 
 class BidForm(forms.Form):

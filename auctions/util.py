@@ -6,6 +6,7 @@ def getCurBid(auction):
         return None
 
 categorylist = [
+
         ("Fashion", "Fashion"),
         ("Books, Movies & Music", "Books, Movies & Music"),
         ("Electronics", "Electronics"),
@@ -15,5 +16,5 @@ categorylist = [
         ("Toys & Hobbies", "Toys & Hobbies"),
         ("Business & Industrial", "Business & Industrial"),
         ("Health & Beauty", "Health & Beauty"),
-        ("Others", "Others")
+        ("Others", "Select A Category")
         ]
